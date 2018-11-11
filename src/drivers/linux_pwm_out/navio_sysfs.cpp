@@ -107,7 +107,8 @@ int NavioSysfsPWMOut::init()
 
 int NavioSysfsPWMOut::send_output_pwm(const uint16_t *pwm, int num_outputs)
 {
-	char data[16];
+
+        char data[16];
 
 	if (num_outputs > _pwm_num) {
 		num_outputs = _pwm_num;
