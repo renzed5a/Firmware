@@ -216,11 +216,19 @@ void subscribe()
 
 void task_main(int argc, char *argv[])
 {
+<<<<<<< HEAD
 	//Noise Inject
 	FlightTestInput fti_PWM1{"FTI_PWM1"};
 	FlightTestInput fti_PWM2{"FTI_PWM2"};
 	FlightTestInput fti_PWM3{"FTI_PWM3"};
 	FlightTestInput fti_PWM4{"FTI_PWM4"};
+=======
+    //Noise Inject
+    FlightTestInput fti_PWM1{"FTI_PWM1"};
+    FlightTestInput fti_PWM2{"FTI_PWM2"};
+    FlightTestInput fti_PWM3{"FTI_PWM3"};
+    FlightTestInput fti_PWM4{"FTI_PWM4"};
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 
 	_is_running = true;
 
@@ -382,6 +390,27 @@ void task_main(int argc, char *argv[])
 				       _outputs.output,
 				       pwm,
 				       &_pwm_limit);
+
+
+            // Noise inject
+            float tmpinject;
+
+            tmpinject = pwm[0];
+            fti_PWM1.inject(tmpinject);
+            pwm[0] = tmpinject;
+
+            tmpinject = pwm[1];
+            fti_PWM2.inject(tmpinject);
+            pwm[1] = tmpinject;
+
+            tmpinject = pwm[2];
+            fti_PWM3.inject(tmpinject);
+            pwm[2] = tmpinject;
+
+            tmpinject = pwm[3];
+            fti_PWM4.inject(tmpinject);
+            pwm[3] = tmpinject;
+
 
 			if (_armed.lockdown || _armed.manual_lockdown) {
 				pwm_out->send_output_pwm(disarmed_pwm, _outputs.noutputs);

@@ -92,7 +92,11 @@ set(parameters_xml ${PX4_BINARY_DIR}/parameters.xml)
 file(GLOB_RECURSE param_src_files ${PX4_SOURCE_DIR}/src/*params.c)
 add_custom_command(OUTPUT ${parameters_xml}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/px_process_params.py
+<<<<<<< HEAD
 		--src-path ${module_list} ${generated_params_dir}
+=======
+		--src-path ${module_list} ${PX4_BINARY_DIR}/generated_params
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 		--xml ${parameters_xml}
 		--inject-xml ${CMAKE_CURRENT_SOURCE_DIR}/parameters_injected.xml
 		--overrides ${PARAM_DEFAULT_OVERRIDES}

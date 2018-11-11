@@ -10,18 +10,30 @@ FlightTestInput::FlightTestInput(const char *name) :
 	_enabled(this, "EN"),
 	_dwell_time(this, "TIME"),
 	_bias(this, "BIAS"),
+<<<<<<< HEAD
 	_amplitude(this, "AMP"),
 	_standard_deviation(this, "SD")
 {
 }
 //test
+=======
+    _amplitude(this, "AMP"),
+    _standard_deviation(this, "SD")
+{
+}
+
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 void
 FlightTestInput::update()
 {
 	float dt = 0.0f;
 
 	if (_last_update > 0) {
+<<<<<<< HEAD
 		dt = hrt_elapsed_time(&_last_update) / 1e6f;
+=======
+		dt = hrt_elapsed_time(&_last_update);
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 	}
 
 	_last_update = hrt_absolute_time();
@@ -29,6 +41,7 @@ FlightTestInput::update()
 	// check vehicle status for changes to publication state
 	_vehicle_status_sub.update();
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_BOARD_SITL
 	const bool switch_was_on = true;
 	const bool switch_on = true;
@@ -37,6 +50,13 @@ FlightTestInput::update()
 	_manual_control_setpoint_sub.update();
 	const bool switch_on = (_manual_control_setpoint_sub.get().fti_switch == manual_control_setpoint_s::SWITCH_POS_ON);
 #endif
+=======
+	const bool switch_was_on =
+		true; //(_manual_control_setpoint_sub.get().fti_switch == manual_control_setpoint_s::SWITCH_POS_ON);
+	_manual_control_setpoint_sub.update();
+	const bool switch_on =
+		true; //(_manual_control_setpoint_sub.get().fti_switch == manual_control_setpoint_s::SWITCH_POS_ON);
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 
 	const bool was_enabled = _enabled.get();
 	_enabled.update();
@@ -76,6 +96,7 @@ FlightTestInput::update()
 
 	case TEST_INPUT_RUNNING:
 
+<<<<<<< HEAD
 		if ((switch_was_on && switch_on) // manual switch still on
 		    && _enabled.get() // enabled
 		   ) {
@@ -87,6 +108,16 @@ FlightTestInput::update()
 				_state = TEST_INPUT_COMPLETE;
 			}
 
+=======
+        //if ((switch_was_on && switch_on) // manual switch still on
+        //       && _enabled.get() // enabled
+        //      ) {
+        if ( _enabled.get() // enabled
+              ) {
+			// increment time
+			_time_running += dt;
+
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 		} else {
 			mavlink_log_critical(&_mavlink_log_pub, "Flight test input %s aborted", _name);
 			_state = TEST_INPUT_OFF;
@@ -112,7 +143,11 @@ float FlightTestInput::AWGN_generate()
 	int p = 1;
 
 	while (p > 0) {
+<<<<<<< HEAD
 		temp2 = (rand() / ((float)RAND_MAX));//need to add _standard_deviation.get()
+=======
+        temp2 = (rand() / ((float)RAND_MAX));//need to add _standard_deviation.get()
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 
 		if (temp2 == 0.0f) {
 			// temp2 is >= (RAND_MAX / 2)
@@ -126,7 +161,11 @@ float FlightTestInput::AWGN_generate()
 
 	float temp1 = cosf((2.0f * M_PI_F) * rand() / ((float)RAND_MAX));
 
+<<<<<<< HEAD
         float result = (sqrtf(-2.0f * logf(temp2)) * temp1) * _standard_deviation.get();
+=======
+	float result = sqrtf(-2.0f * logf(temp2)) * temp1;
+>>>>>>> 13747f5b68d29cb4e1a92c7c1c918c24b71efae5
 
 	return result;
 }
