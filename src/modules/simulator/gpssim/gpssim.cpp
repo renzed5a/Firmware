@@ -60,6 +60,7 @@
 #include <uORB/uORB.h>
 #include <uORB/topics/vehicle_gps_position.h>
 #include <uORB/topics/satellite_info.h>
+#include <lib/flight_test_input/flight_test_input.hpp>
 
 #include <simulator/simulator.h>
 
@@ -146,6 +147,16 @@ private:
 	void				cmd_reset();
 
 	int 				receive(int timeout);
+
+	FlightTestInput _fti_gps_eph{"FTI_GPS_EPH"};
+    FlightTestInput _fti_gps_epv{"FTI_GPS_EPV"};
+    FlightTestInput _fti_gps_vel_n{"FTI_GPS_V_N"};	
+	FlightTestInput _fti_gps_vel_e{"FTI_GPS_V_E"};
+	FlightTestInput _fti_gps_vel_d{"FTI_GPS_V_D"};
+    FlightTestInput _fti_gps_lat{"FTI_GPS_LAT"};
+    FlightTestInput _fti_gps_lon{"FTI_GPS_LON"};
+    FlightTestInput _fti_gps_alt{"FTI_GPS_ALT"};
+
 };
 
 
@@ -265,7 +276,9 @@ GPSSIM::task_main_trampoline(int argc, char *argv[])
 
 int
 GPSSIM::receive(int timeout)
-{
+{	
+	float lat = 0.0, lon = 0.0, alt = 0.0;
+
 	Simulator *sim = Simulator::getInstance();
 	simulator::RawGPSData gps;
 	sim->getGPSSample((uint8_t *)&gps, sizeof(gps));
@@ -274,15 +287,42 @@ GPSSIM::receive(int timeout)
 
 	if (gps.timestamp != timestamp_last) {
 		_report_gps_pos.timestamp = hrt_absolute_time();
+		
 		_report_gps_pos.lat = gps.lat;
 		_report_gps_pos.lon = gps.lon;
 		_report_gps_pos.alt = gps.alt;
+		// inject on lat, lon, alt
+		lat = _report_gps_pos.lat;
+		lon = _report_gps_pos.lon;
+		alt = _report_gps_pos.alt;
+
+		_fti_gps_lat.inject(lat);
+		_report_gps_pos.lat = lat;
+
+		_fti_gps_lon.inject(lon);
+		_report_gps_pos.lon = lon;
+
+		_fti_gps_alt.inject(alt);
+		_report_gps_pos.alt = alt;
+ 
+//   	 	_fti_gps_lon.inject(_report_gps_pos.lon);
+//    	_fti_gps_alt.inject(_report_gps_pos.alt);
+
 		_report_gps_pos.eph = (float)gps.eph * 1e-2f;
 		_report_gps_pos.epv = (float)gps.epv * 1e-2f;
+		// inject noise on eph and epv
+		_fti_gps_eph.inject(_report_gps_pos.eph);
+		_fti_gps_epv.inject(_report_gps_pos.epv);
+		
 		_report_gps_pos.vel_m_s = (float)(gps.vel) / 100.0f;
 		_report_gps_pos.vel_n_m_s = (float)(gps.vn) / 100.0f;
 		_report_gps_pos.vel_e_m_s = (float)(gps.ve) / 100.0f;
 		_report_gps_pos.vel_d_m_s = (float)(gps.vd) / 100.0f;
+		// inject noise on vel_ned
+		_fti_gps_vel_n.inject(_report_gps_pos.vel_n_m_s);
+		_fti_gps_vel_e.inject(_report_gps_pos.vel_e_m_s);
+		_fti_gps_vel_d.inject(_report_gps_pos.vel_d_m_s);
+
 		_report_gps_pos.cog_rad = (float)(gps.cog) * 3.1415f / (100.0f * 180.0f);
 		_report_gps_pos.fix_type = gps.fix_type;
 		_report_gps_pos.satellites_used = gps.satellites_visible;

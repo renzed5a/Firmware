@@ -64,6 +64,7 @@
 #include <mathlib/math/filter/LowPassFilter2p.hpp>
 #include <lib/conversion/rotation.h>
 #include <VirtDevObj.hpp>
+#include <lib/flight_test_input/flight_test_input.hpp>
 
 #define ACCELSIM_DEVICE_PATH_ACCEL	"/dev/sim_accel"
 #define ACCELSIM_DEVICE_PATH_MAG	"/dev/sim_mag"
@@ -141,6 +142,15 @@ private:
 	math::LowPassFilter2p	_accel_filter_x;
 	math::LowPassFilter2p	_accel_filter_y;
 	math::LowPassFilter2p	_accel_filter_z;
+
+    FlightTestInput _fti_accx{"FTI_ACC2X"};
+    FlightTestInput _fti_accy{"FTI_ACC2Y"};
+    FlightTestInput _fti_accz{"FTI_ACC2Z"};
+
+    FlightTestInput _fti_magx{"FTI_MAG2X"};
+    FlightTestInput _fti_magy{"FTI_MAG2Y"};
+    FlightTestInput _fti_magz{"FTI_MAG2Z"};
+
 
 	enum Rotation		_rotation;
 
@@ -769,7 +779,15 @@ ACCELSIM::_measure()
 	accel_report.y = raw_accel_report.y;
 	accel_report.z = raw_accel_report.z;
 
+	// Inject in this area
+	// scaling may be an issue
+	// Noise inject
+    _fti_accx.inject(accel_report.x);
+    _fti_accy.inject(accel_report.y);
+    _fti_accz.inject(accel_report.z);
+
 	accel_report.scaling = _accel_range_scale;
+	
 
 	_accel_reports->force(&accel_report);
 
@@ -848,6 +866,22 @@ ACCELSIM::mag_measure()
 	mag_report.x_raw = xraw_f;
 	mag_report.y_raw = yraw_f;
 	mag_report.z_raw = zraw_f;
+
+	float x = 0.0;
+	float y = 0.0;
+	float z = 0.0;
+	x = mag_report.x_raw;
+	y = mag_report.y_raw;
+	z = mag_report.z_raw;
+
+	// Inject
+    _fti_magx.inject(x);
+    _fti_magy.inject(y);
+    _fti_magz.inject(z);
+
+	mag_report.x_raw = x;
+	mag_report.y_raw = y;
+	mag_report.z_raw = z;
 
 	/* apply user specified rotation */
 	rotate_3f(_rotation, xraw_f, yraw_f, zraw_f);

@@ -14,7 +14,9 @@ add_custom_command(OUTPUT ${generated_fti_params_file}
 			MAG2X MAG2Y MAG2Z
 			BARO
 			BAT_V BAT_C
-			GPS_EPH GPS_EPV
+			GPS_EPH GPS_EPV 
+			GPS_V_N GPS_V_E GPS_V_D
+			GPS_LAT GPS_LON GPS_ALT
 			RC_R RC_P RC_Y RC_T
 			PWM1 PWM2 PWM3 PWM4
 		--verbose

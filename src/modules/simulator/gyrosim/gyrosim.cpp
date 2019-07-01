@@ -75,6 +75,7 @@
 #include <drivers/drv_gyro.h>
 #include <mathlib/math/filter/LowPassFilter2p.hpp>
 #include <lib/conversion/rotation.h>
+#include <lib/flight_test_input/flight_test_input.hpp>
 
 #include "VirtDevObj.hpp"
 
@@ -169,6 +170,14 @@ private:
 
 	Integrator _accel_int;
 	Integrator _gyro_int;
+
+	FlightTestInput _fti_accx{"FTI_ACC1X"};
+	FlightTestInput _fti_accy{"FTI_ACC1Y"};
+	FlightTestInput _fti_accz{"FTI_ACC1Z"};
+
+	FlightTestInput _fti_gyro_x{"FTI_GYRO1X"};
+	FlightTestInput _fti_gyro_y{"FTI_GYRO1Y"};
+	FlightTestInput _fti_gyro_z{"FTI_GYRO1Z"};
 
 	// last temperature reading for print_info()
 	float			_last_temperature;
@@ -873,6 +882,12 @@ GYROSIM::_measure()
 	arb.y = mpu_report.accel_y;
 	arb.z = mpu_report.accel_z;
 
+	// Inject Accelerometer
+    // Noise inject
+    _fti_accx.inject(arb.x);
+    _fti_accy.inject(arb.y);
+    _fti_accz.inject(arb.z);
+
 	matrix::Vector3f aval(mpu_report.accel_x, mpu_report.accel_y, mpu_report.accel_z);
 	matrix::Vector3f aval_integrated;
 
@@ -899,6 +914,11 @@ GYROSIM::_measure()
 	grb.x = mpu_report.gyro_x;
 	grb.y = mpu_report.gyro_y;
 	grb.z = mpu_report.gyro_z;
+
+	// Inject Gyroscope
+    _fti_gyro_x.inject(grb.x);
+    _fti_gyro_y.inject(grb.y);
+    _fti_gyro_z.inject(grb.z);
 
 	matrix::Vector3f gval(mpu_report.gyro_x, mpu_report.gyro_y, mpu_report.gyro_z);
 	matrix::Vector3f gval_integrated;

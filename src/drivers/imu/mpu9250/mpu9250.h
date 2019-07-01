@@ -48,14 +48,14 @@
 #include <drivers/drv_mag.h>
 #include <mathlib/math/filter/LowPassFilter2p.hpp>
 #include <lib/conversion/rotation.h>
-<<<<<<< HEAD
+
 #include <systemlib/err.h>
 
 #include <uORB/uORB.h>
 #include <uORB/topics/debug_key_value.h>
-=======
+
 #include <lib/flight_test_input/flight_test_input.hpp>
->>>>>>> 4ef9763e64145fb8b0a1c91ab887a6e9e6fefcc9
+
 
 #include "mag.h"
 #include "accel.h"
@@ -275,8 +275,7 @@ public:
 	 */
 	void			print_info();
 
-<<<<<<< HEAD
-=======
+
 	void			print_registers();
 
 	// deliberately cause a sensor error
@@ -293,7 +292,7 @@ public:
 
 	bool			_should_exit{false};
 
->>>>>>> 4ef9763e64145fb8b0a1c91ab887a6e9e6fefcc9
+
 protected:
 	device::Device *_interface;
 	uint8_t			_whoami;	/** whoami result */
@@ -305,13 +304,12 @@ protected:
 	friend class MPU9250_gyro;
 
 private:
-<<<<<<< HEAD
+
 	MPU9250_accel   *_accel;
-=======
+
 
 	px4_sem_t _data_semaphore;
 
->>>>>>> 4ef9763e64145fb8b0a1c91ab887a6e9e6fefcc9
 	MPU9250_gyro	*_gyro;
 	MPU9250_mag     *_mag;
 	uint8_t 		_selected_bank;			/* Remember selected memory bank to avoid polling / setting on each read/write */
